@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Table</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <button onclick="start()" class="btn btn-primary mr-2">Start</button>
+        <button onclick="nextStep()" class="btn btn-primary mr-2">Next Step</button>
+        <button onclick="cancel()" class="btn btn-danger mr-2">Cancel</button>
+        <button onclick="finish()" class="btn btn-success mr-2">Finish</button>
+        <br><br>
+        <table class="table table-bordered" id="dataTable">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Step</th>
+                    <th>Step %</th>
+                    <th>Input Value</th>
+                    <th>Ref. Value</th>
+                    <th>Reading</th>
+                    <th>Deviation</th>
+                    <th>Error % Ref</th>
+                    <th>Error % Span</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    let step = 1;
+     // Disable the Next Step button
+     document.getElementById("nextStepBtn").disabled = true;
+
+    function start() {
+        addRow();
+        document.querySelector('.stepPercentage:last-of-type').focus();
+    }
+
+    function addRow() {
+        const table = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        const cell3 = newRow.insertCell(2);
+        const cell4 = newRow.insertCell(3);
+        const cell5 = newRow.insertCell(4);
+        const cell6 = newRow.insertCell(5);
+        const cell7 = newRow.insertCell(6);
+        const cell8 = newRow.insertCell(7);
+        const cell9 = newRow.insertCell(8);
+        const cell10 = newRow.insertCell(9);
+
+        cell1.innerHTML = step++;
+        cell2.innerHTML = '<input type="text" class="form-control stepPercentage">';
+        cell3.innerHTML = '<input type="text" class="form-control inputValue">';
+        cell4.innerHTML = '<input type="text" class="form-control refValue">';
+        cell5.innerHTML = '<input type="text" class="form-control reading">';
+        cell6.innerHTML = '<input type="text" class="form-control deviation">';
+        cell7.innerHTML = '<input type="text" class="form-control errorref">';
+        cell8.innerHTML = '<input type="text" class="form-control errorspan">';
+        cell9.innerHTML = '<input type="text" class="form-control result">';
+    
+
+        cell10.innerHTML = '<button onclick="save(this)" class="btn btn-success">&#10004;</button>';
+    }
+
+    function save(button) {
+        const row = button.parentNode.parentNode;
+        const readingCell = row.cells[4];
+        readingCell.innerHTML = '3.03'; // Temporary value
+
+        button.disabled = true;
+
+         // Enable the Next Step button
+         document.getElementById("nextStepBtn").disabled = false;
+
+        // Make all cells in the current row read-only
+        const cells = row.cells;
+        for (let i = 0; i < cells.length - 1; i++) {
+            const input = cells[i].querySelector('input');
+            if (input) {
+                input.readOnly = true;
+            }
+        }
+    }
+
+    function nextStep() {
+        const table = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+        const lastRow = table.rows[table.rows.length - 1];
+        const cells = lastRow.cells;
+
+        for (let i = 1; i <= 3; i++) {
+            const input = cells[i].getElementsByTagName('input')[0];
+            input.disabled = true;
+        }
+
+        addRow();
+        document.querySelector('.stepPercentage:last-of-type').focus();
+        
+        // Disable the Next Step button
+        document.getElementById("nextStepBtn").disabled = true;
+    }
+
+    function cancel() {
+        document.getElementById("dataTable").getElementsByTagName('tbody')[0].innerHTML = '';
+        step = 1;
+    }
+
+    function finish() {
+        const table = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+        const data = [];
+        for (let i = 0; i < table.rows.length; i++) {
+            const row = table.rows[i];
+            const rowData = {
+                step: row.cells[0].innerHTML,
+                stepPercentage: row.cells[1].getElementsByTagName('input')[0].value,
+                inputValue: row.cells[2].getElementsByTagName('input')[0].value,
+                refValue: row.cells[3].getElementsByTagName('input')[0].value,
+                reading: row.cells[4].innerHTML,
+                deviation: row.cells[5].innerHTML,
+                errorRef: row.cells[6].innerHTML,
+                errorSpan: row.cells[7].innerHTML,
+                result: row.cells[8].innerHTML
+            };
+            data.push(rowData);
+        }
+        console.log(JSON.stringify(data));
+    }
+</script>
+</body>
+</html>
